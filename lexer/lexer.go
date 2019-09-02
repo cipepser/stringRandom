@@ -3,30 +3,22 @@ package lexer
 import "github.com/cipepser/stringRandom/token"
 
 type Lexer struct {
-	b            []byte
+	b            string
 	position     int
 	readPosition int
 	ch           byte
 }
 
-func New(input []byte) *Lexer {
+func New(input string) *Lexer {
 	l := &Lexer{b: input}
 	l.readPosition = l.position + 1
 	return l
 }
 
-func (l *Lexer) ReadCurByte() byte {
+func (l *Lexer) ReadChar() byte {
 	b := l.b[l.position]
 	l.next()
 	return b
-}
-
-func (l *Lexer) ReadBytes(n int) []byte {
-	bs := l.b[l.position : l.position+n]
-	for i := 0; i < n; i++ {
-		l.next()
-	}
-	return bs
 }
 
 func (l *Lexer) HasNext() bool {
@@ -41,12 +33,12 @@ func (l *Lexer) next() {
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
-	b := l.ReadCurByte()
+	b := l.ReadChar()
 
 	// TODO: lexerのテストを書く
 	switch b {
 	case '\\':
-		b = l.ReadCurByte()
+		b = l.ReadChar()
 		switch b {
 		case 'd':
 			tok.Literal = "d"

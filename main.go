@@ -16,7 +16,7 @@ var (
 )
 
 func main() {
-	b := []byte(`\d{1}`)
+	b := `\d{1}`
 	l := lexer.New(b)
 
 	for l.HasNext() {
