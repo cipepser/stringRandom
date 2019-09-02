@@ -35,7 +35,6 @@ func (l *Lexer) NextToken() token.Token {
 
 	b := l.ReadChar()
 
-	// TODO: lexerのテストを書く
 	switch b {
 	case '\\':
 		b = l.ReadChar()
@@ -52,7 +51,7 @@ func (l *Lexer) NextToken() token.Token {
 	case '}':
 		tok.Literal = "}"
 		tok.Type = token.RBRACE
-	case 0:
+	case 0, '\n':
 		tok.Literal = ""
 		tok.Type = token.EOF
 	default:
