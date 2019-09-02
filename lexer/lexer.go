@@ -43,14 +43,17 @@ func (l *Lexer) NextToken() token.Token {
 
 	b := l.ReadCurByte()
 
-
+	// TODO: lexerのテストを書く
 	switch b {
 	case '\\':
-		tok.Literal = "\\"
-		tok.Type = token.BACKSLASH
-	case 'd':
-		tok.Literal = "d"
-		tok.Type = token.DIGIT
+		b = l.ReadCurByte()
+		switch b {
+		case 'd':
+			tok.Literal = "d"
+			tok.Type = token.DIGIT
+		default:
+			panic("undefined character:" + string(b))
+		}
 	case '{':
 		tok.Literal = "{"
 		tok.Type = token.LBRACE

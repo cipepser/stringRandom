@@ -17,6 +17,4 @@ const (
 
 	LBRACE = "{"
 	RBRACE = "}"
-
-	BACKSLASH = "\\"
 )
