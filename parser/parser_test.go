@@ -28,7 +28,7 @@ func TestDigitExpression(t *testing.T) {
 
 		digitExpression, ok := stmt.Expression.(*ast.DigitExpression)
 		if !ok {
-			t.Fatalf("exp not *ast.Identifier. got=%T", stmt.Expression)
+			t.Fatalf("exp not *ast.DigtExpression. got=%T", stmt.Expression)
 		}
 		if digitExpression.Range.Min != tt.expectedMin {
 			t.Fatalf("wrong Range(min). got=%v, want=%v", digitExpression.Range.Min, tt.expectedMin)
