@@ -4,6 +4,7 @@ import (
 	"github.com/cipepser/stringRandom/ast"
 	"github.com/cipepser/stringRandom/lexer"
 	"github.com/cipepser/stringRandom/token"
+	"strconv"
 )
 
 const (
@@ -94,8 +95,37 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (p *Parser) parseDigit() ast.Expression {
-	// TODO
-	panic("unimplemented")
+	expression := &ast.DigitExpression{
+		Token: p.curToken,
+	}
+	r := ast.Range{}
+
+	if !p.expectPeek(token.LBRACE) {
+		// TODO: LPARENを増やす
+		// TODO: カッコごとに対応が必要
+		return nil
+	}
+
+	if !p.expectPeek(token.INT) {
+		return nil
+	}
+
+	min, err := strconv.Atoi(p.curToken.Literal)
+	if err != nil {
+		return nil
+	}
+	r.Min = min
+
+	switch p.peekToken.Type {
+	case token.RBRACE: // TODO: COMMAとかも追加
+		r.Max = min
+	default:
+		return nil
+	}
+	expression.Range = r
+	p.nextToken()
+
+	return expression
 }
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
