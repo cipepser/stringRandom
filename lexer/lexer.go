@@ -51,7 +51,7 @@ func (l *Lexer) NextToken() token.Token {
 	case '}':
 		tok.Literal = "}"
 		tok.Type = token.RBRACE
-	case 0, '\n':
+	case 0, '\n': // TODO: EOFを返すパターンが実装できてない？
 		tok.Literal = ""
 		tok.Type = token.EOF
 	default:
