@@ -22,6 +22,25 @@ type Expression interface {
 	expressionNode()
 }
 
+type Program struct {
+	Statements []Statement
+}
+
+type ExpressionStatement struct {
+	Token      token.Token
+	Expression Expression
+}
+
+func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
+func (es *ExpressionStatement) statementNode()       {}
+func (es *ExpressionStatement) String() string {
+	if es.Expression != nil {
+		return es.Expression.String()
+	}
+
+	return ""
+}
+
 type DigitExpression struct {
 	Token token.Token
 	Range
@@ -32,18 +51,18 @@ func (de *DigitExpression) String() string {
 	var out bytes.Buffer
 
 	out.WriteString("\\d")
-	switch de.Range.max {
+	switch de.Range.Max {
 	case INFINITE:
-		if de.Range.min == 0 {
+		if de.Range.Min == 0 {
 			out.WriteString("*")
 		} else {
 			out.WriteString("+")
 		}
 	default:
 		out.WriteString("{")
-		out.WriteString(strconv.Itoa(de.Range.min))
+		out.WriteString(strconv.Itoa(de.Range.Min))
 		out.WriteString(",")
-		out.WriteString(strconv.Itoa(de.Range.max))
+		out.WriteString(strconv.Itoa(de.Range.Max))
 		out.WriteString("}")
 	}
 
@@ -52,7 +71,7 @@ func (de *DigitExpression) String() string {
 func (de *DigitExpression) expressionNode() {}
 
 type Range struct {
-	min, max int
+	Min, Max int
 }
 
 const (
