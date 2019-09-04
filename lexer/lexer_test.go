@@ -16,6 +16,7 @@ func TestNextToken(t *testing.T) {
 		{token.LBRACE, "{"},
 		{token.INT, "3"},
 		{token.RBRACE, "}"},
+		{token.EOF, ""},
 	}
 
 	l := New(input)
