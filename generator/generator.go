@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+const (
+	INFINITE = 100
+)
+
 var (
 	//UPPERS = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 	//LOWERS = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
@@ -45,11 +49,16 @@ func generateDigitExpression(node *ast.DigitExpression) {
 	var out bytes.Buffer
 	rand.Seed(time.Now().UnixNano())
 
-	n := rand.Intn(node.Range.Max-node.Range.Min+1) + node.Range.Min
+	max := node.Range.Max
+	if max == ast.INFINITE {
+		max = INFINITE
+	}
+
+	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
 	for i := 0; i < n; i++ {
 		out.WriteString(generateRandomDigit())
 	}
-	fmt.Println(out.String())
+	fmt.Print(out.String())
 }
 
 func generateRandomDigit() string {

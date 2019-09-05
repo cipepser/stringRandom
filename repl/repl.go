@@ -27,5 +27,6 @@ func Start(in io.Reader, out io.Writer) {
 		generator.Generate(program.Parse())
 
 		//io.WriteString(out, "\n")
+		fmt.Println()
 	}
 }

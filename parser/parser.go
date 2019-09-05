@@ -111,54 +111,59 @@ func (p *Parser) parseDigit() ast.Expression {
 
 func (p *Parser) parseRange() (ast.Range, error) {
 	r := ast.Range{}
-	// TODO: parseRangeの中身を実装する
-	// これが決定できればOK
-	//r.Min = min
-	//r.Max = max
-	// 現状実装すべき表現
-	// {3} -> min = 3, max = 3
-	// {2,5} -> min = 2, max = 5
-	// + -> min = 1, max =　ast.INFINITE
-	// * -> min = 1, max =　ast.INFINITE
-	if !p.expectPeek(token.LBRACE) {
-		// TODO: LPARENを増やす
-		// TODO: カッコごとに対応が必要
-		return ast.Range{}, errors.New("unexpected token")
-	}
-
-	if !p.expectPeek(token.INT) {
-		return ast.Range{}, errors.New("unexpected token")
-	}
-
-	min, err := strconv.Atoi(p.curToken.Literal)
-	if err != nil {
-		return ast.Range{}, errors.New("unexpected token")
-	}
-	r.Min = min
 
 	switch p.peekToken.Type {
-	case token.RBRACE:
-		r.Max = min
-	case token.COMMA:
+	case token.LBRACE:
+		// TODO: LPARENを増やす
+		// TODO: カッコごとに対応が必要
 		p.nextToken()
 		if !p.expectPeek(token.INT) {
 			return ast.Range{}, errors.New("unexpected token")
 		}
 
-		max, err := strconv.Atoi(p.curToken.Literal)
+		min, err := strconv.Atoi(p.curToken.Literal)
 		if err != nil {
-			return ast.Range{}, err
-		}
-		r.Max = max
-
-		if !p.expectPeek(token.RBRACE) {
 			return ast.Range{}, errors.New("unexpected token")
 		}
+		r.Min = min
+
+		switch p.peekToken.Type {
+		case token.RBRACE:
+			r.Max = min
+		case token.COMMA:
+			p.nextToken()
+			if !p.expectPeek(token.INT) {
+				return ast.Range{}, errors.New("unexpected token")
+			}
+
+			max, err := strconv.Atoi(p.curToken.Literal)
+			if err != nil {
+				return ast.Range{}, err
+			}
+			r.Max = max
+
+			if !p.expectPeek(token.RBRACE) {
+				return ast.Range{}, errors.New("unexpected token")
+			}
+		default:
+			panic("unreachable")
+		}
+
+	case token.PLUS:
+		r.Min = 1
+		r.Max = ast.INFINITE
+		p.nextToken()
+		p.nextToken()
+
+	case token.ASTERISK:
+		r.Min = 0
+		r.Max = ast.INFINITE
+		p.nextToken()
+		p.nextToken()
 
 	default:
-		return ast.Range{}, errors.New("unreachable")
+		panic("unreachable")
 	}
-
 	return r, nil
 }
 
