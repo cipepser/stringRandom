@@ -11,9 +11,11 @@ const (
 	ILLEGAL = "ILLEGAL"
 	EOF     = "EOF"
 
-	INT = "INT"
-
+	INT   = "INT"
 	DIGIT = "d"
+
+	PLUS     = "+"
+	ASTERISK = "*"
 
 	LBRACE = "{"
 	RBRACE = "}"

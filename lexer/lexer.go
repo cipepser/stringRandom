@@ -44,6 +44,12 @@ func (l *Lexer) NextToken() token.Token {
 		default:
 			panic("undefined character(escape):" + string(l.ch))
 		}
+	case '+':
+		tok.Literal = "+"
+		tok.Type = token.PLUS
+	case '*':
+		tok.Literal = "*"
+		tok.Type = token.ASTERISK
 	case '{':
 		tok.Literal = "{"
 		tok.Type = token.LBRACE
