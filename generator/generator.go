@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/cipepser/stringRandom/ast"
 	"math/rand"
-	"strconv"
 	"time"
 )
 
@@ -57,8 +56,5 @@ func generateRandomDigit() string {
 	rand.Seed(time.Now().UnixNano())
 	r := rand.Intn(len(DIGITS))
 
-	// TODO: DIGITSから取ってこないとダメなのでは...
-	// それならstrconvいらないはず
-
-	return strconv.Itoa(r)
+	return DIGITS[r]
 }
