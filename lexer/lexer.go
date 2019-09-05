@@ -59,7 +59,6 @@ func (l *Lexer) NextToken() token.Token {
 	default:
 		// TODO: 文字列読み込み
 		if isDigit(l.ch) {
-			// TODO: 複数の数字
 			tok.Literal = l.readNumber()
 			tok.Type = token.INT
 			return tok
