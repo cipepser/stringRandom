@@ -60,9 +60,9 @@ func (l *Lexer) NextToken() token.Token {
 		// TODO: 文字列読み込み
 		if isDigit(l.ch) {
 			// TODO: 複数の数字
-			tok.Literal = string(l.ch)
+			tok.Literal = l.readNumber()
 			tok.Type = token.INT
-
+			return tok
 		} else {
 			panic("undefined character(default):" + string(l.ch))
 		}
@@ -72,8 +72,18 @@ func (l *Lexer) NextToken() token.Token {
 	return tok
 }
 
+// TODO: isLetterの実装
+
 func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
+}
+
+func (l *Lexer) readNumber() string {
+	position := l.position
+	for isDigit(l.ch) {
+		l.ReadChar()
+	}
+	return l.b[position:l.position]
 }
 
 func (l *Lexer) peekChar() byte {

@@ -6,7 +6,7 @@ import (
 )
 
 func TestNextToken(t *testing.T) {
-	input := `\d{3}\d{2,5}`
+	input := `\d{3}\d{2,5}\d{12}\d{1,23}`
 
 	tests := []struct {
 		expectedType    token.TokenType
@@ -16,12 +16,26 @@ func TestNextToken(t *testing.T) {
 		{token.LBRACE, "{"},
 		{token.INT, "3"},
 		{token.RBRACE, "}"},
+
 		{token.DIGIT, "d"},
 		{token.LBRACE, "{"},
 		{token.INT, "2"},
 		{token.COMMA, ","},
 		{token.INT, "5"},
 		{token.RBRACE, "}"},
+
+		{token.DIGIT, "d"},
+		{token.LBRACE, "{"},
+		{token.INT, "12"},
+		{token.RBRACE, "}"},
+
+		{token.DIGIT, "d"},
+		{token.LBRACE, "{"},
+		{token.INT, "1"},
+		{token.COMMA, ","},
+		{token.INT, "23"},
+		{token.RBRACE, "}"},
+
 		{token.EOF, ""},
 	}
 

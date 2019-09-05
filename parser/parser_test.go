@@ -14,6 +14,8 @@ func TestDigitExpression(t *testing.T) {
 	}{
 		{`\d{3}`, 3, 3},
 		{`\d{2,5}`, 2, 5},
+		{`\d{12}`, 12, 12},
+		{`\d{1,23}`, 1, 23},
 	}
 
 	for _, tt := range tests {
