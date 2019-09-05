@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"errors"
 	"github.com/cipepser/stringRandom/ast"
 	"github.com/cipepser/stringRandom/lexer"
 	"github.com/cipepser/stringRandom/token"
@@ -98,21 +99,40 @@ func (p *Parser) parseDigit() ast.Expression {
 	expression := &ast.DigitExpression{
 		Token: p.curToken,
 	}
-	r := ast.Range{}
+	r, err := p.parseRange()
+	if err != nil {
+		return nil
+	}
+	expression.Range = r
+	p.nextToken()
 
+	return expression
+}
+
+func (p *Parser) parseRange() (ast.Range, error) {
+	r := ast.Range{}
+	// TODO: parseRangeの中身を実装する
+	// これが決定できればOK
+	//r.Min = min
+	//r.Max = max
+	// 現状実装すべき表現
+	// {3} -> min = 3, max = 3
+	// {2,5} -> min = 2, max = 5
+	// + -> min = 1, max =　ast.INFINITE
+	// * -> min = 1, max =　ast.INFINITE
 	if !p.expectPeek(token.LBRACE) {
 		// TODO: LPARENを増やす
 		// TODO: カッコごとに対応が必要
-		return nil
+		return ast.Range{}, errors.New("unexpected token")
 	}
 
 	if !p.expectPeek(token.INT) {
-		return nil
+		return ast.Range{}, errors.New("unexpected token")
 	}
 
 	min, err := strconv.Atoi(p.curToken.Literal)
 	if err != nil {
-		return nil
+		return ast.Range{}, errors.New("unexpected token")
 	}
 	r.Min = min
 
@@ -122,26 +142,24 @@ func (p *Parser) parseDigit() ast.Expression {
 	case token.COMMA:
 		p.nextToken()
 		if !p.expectPeek(token.INT) {
-			return nil
+			return ast.Range{}, errors.New("unexpected token")
 		}
 
 		max, err := strconv.Atoi(p.curToken.Literal)
 		if err != nil {
-			return nil
+			return ast.Range{}, err
 		}
 		r.Max = max
 
 		if !p.expectPeek(token.RBRACE) {
-			return nil
+			return ast.Range{}, errors.New("unexpected token")
 		}
 
 	default:
-		return nil
+		return ast.Range{}, errors.New("unreachable")
 	}
-	expression.Range = r
-	p.nextToken()
 
-	return expression
+	return r, nil
 }
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
