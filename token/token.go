@@ -17,4 +17,5 @@ const (
 
 	LBRACE = "{"
 	RBRACE = "}"
+	COMMA  = ","
 )

@@ -117,8 +117,24 @@ func (p *Parser) parseDigit() ast.Expression {
 	r.Min = min
 
 	switch p.peekToken.Type {
-	case token.RBRACE: // TODO: COMMAとかも追加
+	case token.RBRACE:
 		r.Max = min
+	case token.COMMA:
+		p.nextToken()
+		if !p.expectPeek(token.INT) {
+			return nil
+		}
+
+		max, err := strconv.Atoi(p.curToken.Literal)
+		if err != nil {
+			return nil
+		}
+		r.Max = max
+
+		if !p.expectPeek(token.RBRACE) {
+			return nil
+		}
+
 	default:
 		return nil
 	}

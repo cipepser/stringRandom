@@ -13,6 +13,7 @@ func TestDigitExpression(t *testing.T) {
 		expectedMax int
 	}{
 		{`\d{3}`, 3, 3},
+		{`\d{2,5}`, 2, 5},
 	}
 
 	for _, tt := range tests {
@@ -33,7 +34,7 @@ func TestDigitExpression(t *testing.T) {
 		if digitExpression.Range.Min != tt.expectedMin {
 			t.Fatalf("wrong Range(min). got=%v, want=%v", digitExpression.Range.Min, tt.expectedMin)
 		}
-		if digitExpression.Range.Max != tt.expectedMin {
+		if digitExpression.Range.Max != tt.expectedMax {
 			t.Fatalf("wrong Range(max). got=%v, want=%v", digitExpression.Range.Max, tt.expectedMax)
 		}
 	}
