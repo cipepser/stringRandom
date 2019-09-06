@@ -11,9 +11,12 @@ const (
 	ILLEGAL = "ILLEGAL"
 	EOF     = "EOF"
 
-	INT   = "INT"
-	STRING = "STRING"
-	DIGIT = "d"
+	INT      = "INT"
+	STRING   = "STRING"
+	DIGIT    = "d"
+	//NOTDIGIT = "D"
+	WORD     = "w"
+	//NOTWORD  = "W"
 
 	PLUS     = "+"
 	ASTERISK = "*"

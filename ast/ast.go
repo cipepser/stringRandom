@@ -128,3 +128,32 @@ func (se *StringExpression) String() string {
 	return out.String()
 }
 func (se *StringExpression) expressionNode() {}
+
+type WordExpression struct {
+	Token token.Token
+	Range
+}
+
+func (we *WordExpression) TokenLiteral() string { return we.Token.Literal }
+func (we *WordExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("\\w")
+	switch we.Range.Max {
+	case INFINITE:
+		if we.Range.Min == 0 {
+			out.WriteString("*")
+		} else {
+			out.WriteString("+")
+		}
+	default:
+		out.WriteString("{")
+		out.WriteString(strconv.Itoa(we.Range.Min))
+		out.WriteString(",")
+		out.WriteString(strconv.Itoa(we.Range.Max))
+		out.WriteString("}")
+	}
+
+	return out.String()
+}
+func (we *WordExpression) expressionNode() {}

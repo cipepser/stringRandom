@@ -46,6 +46,10 @@ func (l *Lexer) NextToken() token.Token {
 			l.ReadChar()
 			tok.Literal = "d"
 			tok.Type = token.DIGIT
+		case 'w':
+			l.ReadChar()
+			tok.Literal = "w"
+			tok.Type = token.WORD
 		default:
 			panic("undefined meta-character:" + string(l.ch))
 		}

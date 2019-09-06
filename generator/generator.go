@@ -13,14 +13,20 @@ const (
 )
 
 var (
-	//UPPERS = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
-	//LOWERS = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
+	UPPERS = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+	LOWERS = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
 	DIGITS = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
 	//SPACES = []string{" ", "\n", "\t"}
 	//OETHERS =[]string{"!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "\\", "]", "^", "`", "{", "|", "}", "~"}
-
-	//CLASSES = map[]
+	WORD []string
 )
+
+func init() {
+	WORD = append(WORD, UPPERS...)
+	WORD = append(WORD, LOWERS...)
+	WORD = append(WORD, DIGITS...)
+	WORD = append(WORD, "_")
+}
 
 func Generate(node ast.Node) {
 	switch node := node.(type) {
@@ -32,6 +38,8 @@ func Generate(node ast.Node) {
 		generateDigitExpression(node)
 	case *ast.StringExpression:
 		generateStringExpression(node)
+	case *ast.WordExpression:
+		generateWordExpression(node)
 	default:
 		panic("unknown node" + node.String())
 	}
@@ -86,7 +94,25 @@ func generateStringExpression(node *ast.StringExpression) {
 	fmt.Print(out.String())
 }
 
+func generateWordExpression(node *ast.WordExpression) {
+	var out bytes.Buffer
+	rand.Seed(time.Now().UnixNano())
+
+	max := node.Range.Max
+	if max == ast.INFINITE {
+		max = INFINITE
+	}
+
+	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
+	for i := 0; i < n; i++ {
+		out.WriteString(generateRandomLetter())
+	}
+	fmt.Print(out.String())
+}
+
 func generateRandomLetter() string {
-	// TODO: 実装する
-	panic("unimplemented")
+	rand.Seed(time.Now().UnixNano())
+	r := rand.Intn(len(WORD))
+
+	return WORD[r]
 }
