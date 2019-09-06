@@ -20,7 +20,6 @@ type Parser struct {
 	peekToken token.Token
 
 	prefixParseFns map[token.TokenType]prefixParseFn
-	// TODO: infixになることある？
 }
 
 func New(l *lexer.Lexer) *Parser {
@@ -216,8 +215,6 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		return nil
 	}
 	leftExp := prefix()
-
-	// TODO: !p.peekTokenIsのループいる？
 
 	return leftExp
 }
