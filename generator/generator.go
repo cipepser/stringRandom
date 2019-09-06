@@ -30,6 +30,8 @@ func Generate(node ast.Node) {
 		generateExpressionStatement(node)
 	case *ast.DigitExpression:
 		generateDigitExpression(node)
+	case *ast.StringExpression:
+		generateStringExpression(node)
 	default:
 		panic("unknown node" + node.String())
 	}
@@ -66,4 +68,25 @@ func generateRandomDigit() string {
 	r := rand.Intn(len(DIGITS))
 
 	return DIGITS[r]
+}
+
+func generateStringExpression(node *ast.StringExpression) {
+	var out bytes.Buffer
+	rand.Seed(time.Now().UnixNano())
+
+	max := node.Range.Max
+	if max == ast.INFINITE {
+		max = INFINITE
+	}
+
+	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
+	for i := 0; i < n; i++ {
+		out.WriteString(node.TokenLiteral())
+	}
+	fmt.Print(out.String())
+}
+
+func generateRandomLetter() string {
+	// TODO: 実装する
+	panic("unimplemented")
 }

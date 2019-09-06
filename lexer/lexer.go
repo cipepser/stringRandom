@@ -68,7 +68,6 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Literal = ""
 		tok.Type = token.EOF
 	default:
-		// TODO: 次の文字が範囲指定文字（*とか+とか{）だった場合に失敗する
 		if isLetter(l.ch) {
 			tok.Literal = l.readString()
 			tok.Type = token.STRING
