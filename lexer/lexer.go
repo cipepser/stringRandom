@@ -42,7 +42,7 @@ func (l *Lexer) NextToken() token.Token {
 			tok.Literal = "d"
 			tok.Type = token.DIGIT
 		default:
-			panic("undefined character(escape):" + string(l.ch))
+			panic("undefined meta-character:" + string(l.ch))
 		}
 	case '+':
 		tok.Literal = "+"
@@ -63,8 +63,11 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Literal = ""
 		tok.Type = token.EOF
 	default:
-		// TODO: 文字列読み込み
-		if isDigit(l.ch) {
+		if isLetter(l.ch) {
+			tok.Literal = l.readString()
+			tok.Type = token.STRING
+			return tok
+		} else if isDigit(l.ch) {
 			tok.Literal = l.readNumber()
 			tok.Type = token.INT
 			return tok
@@ -77,7 +80,18 @@ func (l *Lexer) NextToken() token.Token {
 	return tok
 }
 
-// TODO: isLetterの実装
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+	// TODO: これ以外の文字も追加する
+}
+
+func (l *Lexer) readString() string {
+	position := l.position
+	for isLetter(l.ch) {
+		l.ReadChar()
+	}
+	return l.b[position:l.position]
+}
 
 func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
