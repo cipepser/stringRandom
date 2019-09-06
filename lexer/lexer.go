@@ -2,6 +2,11 @@ package lexer
 
 import (
 	"github.com/cipepser/stringRandom/token"
+	"strings"
+)
+
+var (
+	RANGECHARS = "*+{"
 )
 
 type Lexer struct {
@@ -63,6 +68,7 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Literal = ""
 		tok.Type = token.EOF
 	default:
+		// TODO: 次の文字が範囲指定文字（*とか+とか{）だった場合に失敗する
 		if isLetter(l.ch) {
 			tok.Literal = l.readString()
 			tok.Type = token.STRING
@@ -88,6 +94,9 @@ func isLetter(ch byte) bool {
 func (l *Lexer) readString() string {
 	position := l.position
 	for isLetter(l.ch) {
+		if strings.Contains(RANGECHARS, string(l.peekChar())) && position != l.position {
+			return l.b[position:l.position]
+		}
 		l.ReadChar()
 	}
 	return l.b[position:l.position]
@@ -100,6 +109,9 @@ func isDigit(ch byte) bool {
 func (l *Lexer) readNumber() string {
 	position := l.position
 	for isDigit(l.ch) {
+		if strings.Contains(RANGECHARS, string(l.peekChar())) && position != l.position {
+			return l.b[position:l.position]
+		}
 		l.ReadChar()
 	}
 	return l.b[position:l.position]
