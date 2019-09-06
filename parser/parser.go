@@ -30,6 +30,7 @@ func New(l *lexer.Lexer) *Parser {
 
 	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
 	p.registerPrefix(token.DIGIT, p.parseDigit)
+	p.registerPrefix(token.STRING, p.parseString)
 
 	p.nextToken()
 	p.nextToken()
@@ -76,6 +77,7 @@ func (p *Parser) Parse() *ast.Program {
 		p.nextToken()
 	}
 
+	//fmt.Println("[DEBUG] program:", program)
 	return program
 }
 
@@ -104,7 +106,19 @@ func (p *Parser) parseDigit() ast.Expression {
 		return nil
 	}
 	expression.Range = r
-	p.nextToken()
+
+	return expression
+}
+
+func (p *Parser) parseString() ast.Expression {
+	expression := &ast.StringExpression{
+		Token: p.curToken,
+	}
+	r, err := p.parseRange()
+	if err != nil {
+		return nil
+	}
+	expression.Range = r
 
 	return expression
 }
@@ -130,6 +144,7 @@ func (p *Parser) parseRange() (ast.Range, error) {
 		switch p.peekToken.Type {
 		case token.RBRACE:
 			r.Max = min
+			p.nextToken()
 		case token.COMMA:
 			p.nextToken()
 			if !p.expectPeek(token.INT) {
@@ -153,17 +168,17 @@ func (p *Parser) parseRange() (ast.Range, error) {
 		r.Min = 1
 		r.Max = ast.INFINITE
 		p.nextToken()
-		p.nextToken()
 
 	case token.ASTERISK:
 		r.Min = 0
 		r.Max = ast.INFINITE
 		p.nextToken()
-		p.nextToken()
 
 	default:
-		panic("unreachable")
+		r.Min = 1
+		r.Max = 1
 	}
+
 	return r, nil
 }
 
