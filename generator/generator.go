@@ -16,7 +16,7 @@ var (
 	UPPERS = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 	LOWERS = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
 	DIGITS = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
-	//SPACES = []string{" ", "\n", "\t"}
+	SPACES = []string{" ", "\n", "\t"}
 	//OETHERS =[]string{"!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "\\", "]", "^", "`", "{", "|", "}", "~"}
 	WORD []string
 )
@@ -40,6 +40,8 @@ func Generate(node ast.Node) {
 		generateStringExpression(node)
 	case *ast.WordExpression:
 		generateWordExpression(node)
+	case *ast.SpaceExpression:
+		generateSpaceExpression(node)
 	default:
 		panic("unknown node" + node.String())
 	}
@@ -115,4 +117,27 @@ func generateRandomLetter() string {
 	r := rand.Intn(len(WORD))
 
 	return WORD[r]
+}
+
+func generateSpaceExpression(node *ast.SpaceExpression) {
+	var out bytes.Buffer
+	rand.Seed(time.Now().UnixNano())
+
+	max := node.Range.Max
+	if max == ast.INFINITE {
+		max = INFINITE
+	}
+
+	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
+	for i := 0; i < n; i++ {
+		out.WriteString(generateRandomSpace())
+	}
+	fmt.Print(out.String())
+}
+
+func generateRandomSpace() string {
+	rand.Seed(time.Now().UnixNano())
+	r := rand.Intn(len(SPACES))
+
+	return SPACES[r]
 }

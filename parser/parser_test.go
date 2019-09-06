@@ -126,3 +126,42 @@ func TestWordExpression(t *testing.T) {
 		}
 	}
 }
+
+func TestSpaceExpression(t *testing.T) {
+	tests := []struct {
+		input       string
+		expectedMin int
+		expectedMax int
+	}{
+		{`\s{3}`, 3, 3},
+		{`\s{2,5}`, 2, 5},
+		{`\s{12}`, 12, 12},
+		{`\s{1,23}`, 1, 23},
+		{`\s+`, 1, ast.INFINITE},
+		{`\s*`, 0, ast.INFINITE},
+		{`\s`, 1, 1},
+	}
+
+	for i, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.Parse()
+
+		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("test[%d - program.Statement[0] is not ast.ExpressionStatement. got=%T]",
+				i, program.Statements[0])
+		}
+
+		spaceExpression, ok := stmt.Expression.(*ast.SpaceExpression)
+		if !ok {
+			t.Fatalf("test[%d - exp not *ast.SpaceExpression. got=%T]", i, stmt.Expression)
+		}
+		if spaceExpression.Range.Min != tt.expectedMin {
+			t.Fatalf("test[%d - wrong Range(min). got=%v, want=%v]", i, spaceExpression.Range.Min, tt.expectedMin)
+		}
+		if spaceExpression.Range.Max != tt.expectedMax {
+			t.Fatalf("test[%d - wrong Range(max). got=%v, want=%v]", i, spaceExpression.Range.Max, tt.expectedMax)
+		}
+	}
+}

@@ -157,3 +157,32 @@ func (we *WordExpression) String() string {
 	return out.String()
 }
 func (we *WordExpression) expressionNode() {}
+
+type SpaceExpression struct {
+	Token token.Token
+	Range
+}
+
+func (se *SpaceExpression) TokenLiteral() string { return se.Token.Literal }
+func (se *SpaceExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("\\s")
+	switch se.Range.Max {
+	case INFINITE:
+		if se.Range.Min == 0 {
+			out.WriteString("*")
+		} else {
+			out.WriteString("+")
+		}
+	default:
+		out.WriteString("{")
+		out.WriteString(strconv.Itoa(se.Range.Min))
+		out.WriteString(",")
+		out.WriteString(strconv.Itoa(se.Range.Max))
+		out.WriteString("}")
+	}
+
+	return out.String()
+}
+func (se *SpaceExpression) expressionNode() {}

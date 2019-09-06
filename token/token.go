@@ -17,6 +17,8 @@ const (
 	//NOTDIGIT = "D"
 	WORD     = "w"
 	//NOTWORD  = "W"
+	SPACE    = "SPACE"
+	//NOTSPACE = "NOTSPACE"
 
 	PLUS     = "+"
 	ASTERISK = "*"
