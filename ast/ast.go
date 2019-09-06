@@ -95,3 +95,36 @@ type Range struct {
 const (
 	INFINITE = math.MaxInt64 // 便宜上MaxInt64を使う
 )
+
+type StringExpression struct {
+	Token token.Token
+	Range
+}
+
+func (se *StringExpression) TokenLiteral() string { return se.Token.Literal }
+func (se *StringExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(se.Token.Literal)
+	if se.Range.Min == 0 && se.Range.Max == 0 {
+		return out.String()
+	}
+
+	switch se.Range.Max {
+	case INFINITE:
+		if se.Range.Min == 0 {
+			out.WriteString("*")
+		} else {
+			out.WriteString("+")
+		}
+	default:
+		out.WriteString("{")
+		out.WriteString(strconv.Itoa(se.Range.Min))
+		out.WriteString(",")
+		out.WriteString(strconv.Itoa(se.Range.Max))
+		out.WriteString("}")
+	}
+
+	return out.String()
+}
+func (se *StringExpression) expressionNode() {}
