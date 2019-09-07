@@ -33,6 +33,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.WORD, p.parseWord)
 	p.registerPrefix(token.SPACE, p.parseSpace)
 	p.registerPrefix(token.NEWLINE, p.parseNewline)
+	p.registerPrefix(token.TAB, p.parseTab)
 
 	p.nextToken()
 	p.nextToken()
@@ -153,6 +154,19 @@ func (p *Parser) parseSpace() ast.Expression {
 
 func (p *Parser) parseNewline() ast.Expression {
 	expression := &ast.NewlineExpression{
+		Token: p.curToken,
+	}
+	r, err := p.parseRange()
+	if err != nil {
+		return nil
+	}
+	expression.Range = r
+
+	return expression
+}
+
+func (p *Parser) parseTab() ast.Expression {
+	expression := &ast.TabExpression{
 		Token: p.curToken,
 	}
 	r, err := p.parseRange()

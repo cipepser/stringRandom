@@ -215,3 +215,32 @@ func (ne *NewlineExpression) String() string {
 	return out.String()
 }
 func (ne *NewlineExpression) expressionNode() {}
+
+type TabExpression struct {
+	Token token.Token
+	Range
+}
+
+func (te *TabExpression) TokenLiteral() string { return te.Token.Literal }
+func (te *TabExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("\\t")
+	switch te.Range.Max {
+	case INFINITE:
+		if te.Range.Min == 0 {
+			out.WriteString("*")
+		} else {
+			out.WriteString("+")
+		}
+	default:
+		out.WriteString("{")
+		out.WriteString(strconv.Itoa(te.Range.Min))
+		out.WriteString(",")
+		out.WriteString(strconv.Itoa(te.Range.Max))
+		out.WriteString("}")
+	}
+
+	return out.String()
+}
+func (te *TabExpression) expressionNode() {}
