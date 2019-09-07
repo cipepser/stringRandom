@@ -39,9 +39,9 @@ const (
 
 	// TODO: 実装する HEAD = "^"
 	// TODO: 実装する TAIL = "$"
-	// TODO: 実装する WORDHEAD = "<"
-	// TODO: 実装する WORDTAIL = ">"
-	// TODO: 実装する WORDHEADORTAIL = "b"
-	// TODO: 実装する NOTWORDHEADORTAIL = "B"
+	// TODO: 実装する？ WORDHEAD = "<"
+	// TODO: 実装する？ WORDTAIL = ">"
+	// TODO: 実装する？ WORDHEADORTAIL = "b"
+	// TODO: 実装する？ NOTWORDHEADORTAIL = "B"
 	// TODO: 実装する？ \A, \z、\G
 )
