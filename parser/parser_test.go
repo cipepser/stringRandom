@@ -3,10 +3,9 @@ package parser
 import (
 	"github.com/cipepser/stringRandom/ast"
 	"github.com/cipepser/stringRandom/lexer"
+	"github.com/cipepser/stringRandom/token"
 	"testing"
 )
-
-// TODO: 複数にまたがった正規表現のテストを書く
 
 func TestNumberExpression(t *testing.T) {
 	tests := []struct {
@@ -470,6 +469,134 @@ func TestDotExpression(t *testing.T) {
 		if !ok {
 			t.Fatalf("test[%d - exp not *ast.DotExpression. got=%T]", i, stmt.Expression)
 		}
+		if dotExpression.Range.Min != tt.expectedMin {
+			t.Fatalf("test[%d - wrong Range(min). got=%v, want=%v]", i, dotExpression.Range.Min, tt.expectedMin)
+		}
+		if dotExpression.Range.Max != tt.expectedMax {
+			t.Fatalf("test[%d - wrong Range(max). got=%v, want=%v]", i, dotExpression.Range.Max, tt.expectedMax)
+		}
+	}
+}
+
+func TestBlockExpression(t *testing.T) {
+	tests := []struct {
+		input         string
+		expectedBlock ast.Program
+		expectedMin   int
+		expectedMax   int
+	}{
+		{`(3)`, ast.Program{
+			Statements: []ast.Statement{
+				&ast.ExpressionStatement{
+					Expression: &ast.NumberExpression{
+						Token: token.Token{
+							Type:    token.INT,
+							Literal: "3",
+						},
+						Range: ast.Range{1, 1},
+					},
+				},
+			},
+		}, 1, 1},
+		{`(3){2,3}`, ast.Program{
+			Statements: []ast.Statement{
+				&ast.ExpressionStatement{
+					Expression: &ast.NumberExpression{
+						Token: token.Token{
+							Type:    token.INT,
+							Literal: "3",
+						},
+						Range: ast.Range{1, 1},
+					},
+				},
+			},
+		}, 2, 3},
+		{`(3)+`, ast.Program{
+			Statements: []ast.Statement{
+				&ast.ExpressionStatement{
+					Expression: &ast.NumberExpression{
+						Token: token.Token{
+							Type:    token.INT,
+							Literal: "3",
+						},
+						Range: ast.Range{1, 1},
+					},
+				},
+			},
+		}, 1, ast.INFINITE},
+		{`(3\d{2}hoge{1,4})+`, ast.Program{
+			Statements: []ast.Statement{
+				&ast.ExpressionStatement{
+					Expression: &ast.NumberExpression{
+						Token: token.Token{
+							Type:    token.INT,
+							Literal: "3",
+						},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.NumberExpression{
+						Token: token.Token{
+							Type:    token.DIGIT,
+							Literal: "\\d",
+						},
+						Range: ast.Range{2, 2},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.NumberExpression{
+						Token: token.Token{
+							Type:    token.STRING,
+							Literal: "hog",
+						},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.NumberExpression{
+						Token: token.Token{
+							Type:    token.STRING,
+							Literal: "e",
+						},
+						Range: ast.Range{1, 4},
+					},
+				},
+			},
+		}, 1, ast.INFINITE},
+	}
+
+	for i, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.Parse()
+
+		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("test[%d - program.Statement[0] is not ast.ExpressionStatement. got=%T]",
+				i, program.Statements[0])
+		}
+
+		dotExpression, ok := stmt.Expression.(*ast.BlockExpression)
+		if !ok {
+			t.Fatalf("test[%d - exp not *ast.BlockExpression. got=%T]", i, stmt.Expression)
+		}
+		if len(dotExpression.Block.Statements) != len(tt.expectedBlock.Statements) {
+			t.Fatalf("test[%d - length mismatch with *ast.BlockExpression and expected.\ngot=%d\nwant=%d\n]",
+				i,
+				len(dotExpression.Block.Statements),
+				len(tt.expectedBlock.Statements))
+		}
+		for j, stmt := range dotExpression.Block.Statements {
+			if stmt.String() != tt.expectedBlock.Statements[j].String() {
+				t.Fatalf("test[%d(%d) - block not expected.\ngot=%s\nwant=%s\n]",
+					i,
+					j,
+					stmt.String(),
+					tt.expectedBlock.Statements[j].String())
+			}
+		}
+
 		if dotExpression.Range.Min != tt.expectedMin {
 			t.Fatalf("test[%d - wrong Range(min). got=%v, want=%v]", i, dotExpression.Range.Min, tt.expectedMin)
 		}

@@ -40,6 +40,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.TAB, p.parseTab)
 	p.registerPrefix(token.BACKSLASH, p.parseBackslash)
 	p.registerPrefix(token.DOT, p.parseDot)
+	p.registerPrefix(token.LPAREN, p.parseBlock)
 
 	p.nextToken()
 	p.nextToken()
@@ -75,10 +76,14 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 }
 
 func (p *Parser) Parse() *ast.Program {
+	return p.parse(token.EOF)
+}
+
+func (p *Parser) parse(end token.TokenType) *ast.Program {
 	program := &ast.Program{}
 	program.Statements = []ast.Statement{}
 
-	for !p.curTokenIs(token.EOF) {
+	for !p.curTokenIs(end) {
 		stmt := p.parseStatement()
 		if stmt != nil {
 			program.Statements = append(program.Statements, stmt)
@@ -95,6 +100,16 @@ func (p *Parser) parseStatement() ast.Statement {
 	default:
 		return p.parseExpressionStatement()
 	}
+}
+
+func (p *Parser) parseExpression(precedence int) ast.Expression {
+	prefix := p.prefixParseFns[p.curToken.Type]
+	if prefix == nil {
+		return nil
+	}
+	leftExp := prefix()
+
+	return leftExp
 }
 
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
@@ -267,8 +282,6 @@ func (p *Parser) parseRange() (ast.Range, error) {
 
 	switch p.peekToken.Type {
 	case token.LBRACE:
-		// TODO: LPARENを増やす
-		// TODO: カッコごとに対応が必要
 		p.nextToken()
 		if !p.expectPeek(token.INT) {
 			return ast.Range{}, errors.New("unexpected token")
@@ -321,12 +334,20 @@ func (p *Parser) parseRange() (ast.Range, error) {
 	return r, nil
 }
 
-func (p *Parser) parseExpression(precedence int) ast.Expression {
-	prefix := p.prefixParseFns[p.curToken.Type]
-	if prefix == nil {
+func (p *Parser) parseBlock() ast.Expression {
+	expression := &ast.BlockExpression{
+		Token: p.curToken,
+	}
+	p.nextToken()
+
+	b := p.parse(token.RPAREN)
+	expression.Block = *b
+
+	r, err := p.parseRange()
+	if err != nil {
 		return nil
 	}
-	leftExp := prefix()
+	expression.Range = r
 
-	return leftExp
+	return expression
 }

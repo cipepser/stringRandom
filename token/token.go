@@ -11,14 +11,14 @@ const (
 	ILLEGAL = "ILLEGAL"
 	EOF     = "EOF"
 
-	INT      = "INT"
-	STRING   = "STRING"
-	DIGIT    = "d"
-	NOTDIGIT = "D"
-	WORD     = "w"
-	NOTWORD  = "W"
-	SPACE    = "s"
-	NOTSPACE = "S"
+	INT       = "INT"
+	STRING    = "STRING"
+	DIGIT     = "d"
+	NOTDIGIT  = "D"
+	WORD      = "w"
+	NOTWORD   = "W"
+	SPACE     = "s"
+	NOTSPACE  = "S"
 	NEWLINE   = "n"
 	TAB       = "t"
 	BACKSLASH = "\\"
@@ -30,12 +30,13 @@ const (
 
 	LBRACE = "{"
 	RBRACE = "}"
-	// TODO: 実装する LPAREN = "("
-	// TODO: 実装する RPAREN = ")"
+	LPAREN = "("
+	RPAREN = ")"
 	// TODO: 実装する LBRACKET = "["
 	// TODO: 実装する RBRACKET = "]"
 	// TODO: 実装する VERTICAL = "|"
 	COMMA = ","
+	// TODO: メタ文字のエスケープ処理
 
 	// TODO: 実装する HEAD = "^" // []で使われると否定子になる
 	// TODO: 実装する TAIL = "$"

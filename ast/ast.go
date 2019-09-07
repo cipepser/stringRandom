@@ -422,3 +422,35 @@ func (de *DotExpression) String() string {
 	return out.String()
 }
 func (de *DotExpression) expressionNode() {}
+
+type BlockExpression struct {
+	Token token.Token
+	Block Program
+	Range
+}
+
+func (be *BlockExpression) TokenLiteral() string { return be.Token.Literal }
+func (be *BlockExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("(")
+	out.WriteString(be.Block.String())
+	out.WriteString(")")
+	switch be.Range.Max {
+	case INFINITE:
+		if be.Range.Min == 0 {
+			out.WriteString("*")
+		} else {
+			out.WriteString("+")
+		}
+	default:
+		out.WriteString("{")
+		out.WriteString(strconv.Itoa(be.Range.Min))
+		out.WriteString(",")
+		out.WriteString(strconv.Itoa(be.Range.Max))
+		out.WriteString("}")
+	}
+
+	return out.String()
+}
+func (be *BlockExpression) expressionNode() {}

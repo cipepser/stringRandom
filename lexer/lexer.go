@@ -93,6 +93,12 @@ func (l *Lexer) NextToken() token.Token {
 	case '}':
 		tok.Literal = "}"
 		tok.Type = token.RBRACE
+	case '(':
+		tok.Literal = "("
+		tok.Type = token.LPAREN
+	case ')':
+		tok.Literal = ")"
+		tok.Type = token.RPAREN
 	case ',':
 		tok.Literal = ","
 		tok.Type = token.COMMA

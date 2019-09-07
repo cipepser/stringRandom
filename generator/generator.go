@@ -82,6 +82,8 @@ func Generate(node ast.Node) {
 		generateBackslashExpression(node)
 	case *ast.DotExpression:
 		generateDotExpression(node)
+	case *ast.BlockExpression:
+		generateBlockExpression(node)
 	default:
 		panic("unknown node" + node.String())
 	}
@@ -336,4 +338,18 @@ func generateRandomAny() string {
 	r := rand.Intn(len(ANY))
 
 	return ANY[r]
+}
+
+func generateBlockExpression(node *ast.BlockExpression) {
+	rand.Seed(time.Now().UnixNano())
+
+	max := node.Range.Max
+	if max == ast.INFINITE {
+		max = INFINITE
+	}
+
+	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
+	for i := 0; i < n; i++ {
+		Generate(&node.Block)
+	}
 }
