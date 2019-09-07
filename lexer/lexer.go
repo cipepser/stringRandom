@@ -54,6 +54,10 @@ func (l *Lexer) NextToken() token.Token {
 			l.ReadChar()
 			tok.Literal = "w"
 			tok.Type = token.WORD
+		case 'W':
+			l.ReadChar()
+			tok.Literal = "W"
+			tok.Type = token.NOTWORD
 		case 's':
 			l.ReadChar()
 			tok.Literal = "s"

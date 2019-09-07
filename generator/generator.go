@@ -22,6 +22,7 @@ var (
 	WORD      []string
 	ANY       []string
 	NOTDIGITS []string
+	NOTWORD   []string
 )
 
 func init() {
@@ -40,6 +41,8 @@ func init() {
 	NOTDIGITS = append(NOTDIGITS, LOWERS...)
 	NOTDIGITS = append(NOTDIGITS, OTHERS...)
 	NOTDIGITS = append(NOTDIGITS, "_")
+
+	NOTWORD = append(NOTWORD, OTHERS...)
 }
 
 func Generate(node ast.Node) {
@@ -56,6 +59,8 @@ func Generate(node ast.Node) {
 		generateStringExpression(node)
 	case *ast.WordExpression:
 		generateWordExpression(node)
+	case *ast.NotWordExpression:
+		generateNotWordExpression(node)
 	case *ast.SpaceExpression:
 		generateSpaceExpression(node)
 	case *ast.NewlineExpression:
@@ -164,6 +169,29 @@ func generateRandomLetter() string {
 	r := rand.Intn(len(WORD))
 
 	return WORD[r]
+}
+
+func generateNotWordExpression(node *ast.NotWordExpression) {
+	var out bytes.Buffer
+	rand.Seed(time.Now().UnixNano())
+
+	max := node.Range.Max
+	if max == ast.INFINITE {
+		max = INFINITE
+	}
+
+	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
+	for i := 0; i < n; i++ {
+		out.WriteString(generateNotRandomLetter())
+	}
+	fmt.Print(out.String())
+}
+
+func generateNotRandomLetter() string {
+	rand.Seed(time.Now().UnixNano())
+	r := rand.Intn(len(NOTWORD))
+
+	return NOTWORD[r]
 }
 
 func generateSpaceExpression(node *ast.SpaceExpression) {

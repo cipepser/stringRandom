@@ -187,6 +187,35 @@ func (we *WordExpression) String() string {
 }
 func (we *WordExpression) expressionNode() {}
 
+type NotWordExpression struct {
+	Token token.Token
+	Range
+}
+
+func (nwe *NotWordExpression) TokenLiteral() string { return nwe.Token.Literal }
+func (nwe *NotWordExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("\\W")
+	switch nwe.Range.Max {
+	case INFINITE:
+		if nwe.Range.Min == 0 {
+			out.WriteString("*")
+		} else {
+			out.WriteString("+")
+		}
+	default:
+		out.WriteString("{")
+		out.WriteString(strconv.Itoa(nwe.Range.Min))
+		out.WriteString(",")
+		out.WriteString(strconv.Itoa(nwe.Range.Max))
+		out.WriteString("}")
+	}
+
+	return out.String()
+}
+func (nwe *NotWordExpression) expressionNode() {}
+
 type SpaceExpression struct {
 	Token token.Token
 	Range
