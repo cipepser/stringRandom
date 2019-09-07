@@ -62,6 +62,10 @@ func (l *Lexer) NextToken() token.Token {
 			l.ReadChar()
 			tok.Literal = "s"
 			tok.Type = token.SPACE
+		case 'S':
+			l.ReadChar()
+			tok.Literal = "S"
+			tok.Type = token.NOTSPACE
 		case 'n':
 			l.ReadChar()
 			tok.Literal = "n"

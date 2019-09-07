@@ -23,6 +23,7 @@ var (
 	ANY       []string
 	NOTDIGITS []string
 	NOTWORD   []string
+	NOTSPACES []string
 )
 
 func init() {
@@ -43,6 +44,12 @@ func init() {
 	NOTDIGITS = append(NOTDIGITS, "_")
 
 	NOTWORD = append(NOTWORD, OTHERS...)
+
+	NOTSPACES = append(NOTSPACES, UPPERS...)
+	NOTSPACES = append(NOTSPACES, LOWERS...)
+	NOTSPACES = append(NOTSPACES, DIGITS...)
+	NOTSPACES = append(NOTSPACES, OTHERS...)
+	NOTSPACES = append(NOTSPACES, "_")
 }
 
 func Generate(node ast.Node) {
@@ -63,6 +70,8 @@ func Generate(node ast.Node) {
 		generateNotWordExpression(node)
 	case *ast.SpaceExpression:
 		generateSpaceExpression(node)
+	case *ast.NotSpaceExpression:
+		generateNotSpaceExpression(node)
 	case *ast.NewlineExpression:
 		generateNewlineExpression(node)
 	case *ast.TabExpression:
@@ -215,6 +224,29 @@ func generateRandomSpace() string {
 	r := rand.Intn(len(SPACES))
 
 	return SPACES[r]
+}
+
+func generateNotSpaceExpression(node *ast.NotSpaceExpression) {
+	var out bytes.Buffer
+	rand.Seed(time.Now().UnixNano())
+
+	max := node.Range.Max
+	if max == ast.INFINITE {
+		max = INFINITE
+	}
+
+	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
+	for i := 0; i < n; i++ {
+		out.WriteString(generateNotRandomSpace())
+	}
+	fmt.Print(out.String())
+}
+
+func generateNotRandomSpace() string {
+	rand.Seed(time.Now().UnixNano())
+	r := rand.Intn(len(NOTSPACES))
+
+	return NOTSPACES[r]
 }
 
 func generateNewlineExpression(node *ast.NewlineExpression) {

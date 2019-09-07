@@ -6,7 +6,7 @@ import (
 )
 
 func TestNextToken(t *testing.T) {
-	input := `\d{3}\d{2,5}\d{12}\d{1,23}\d+\d*Hogee*\d\d\w\s\n\t\\.\D\W`
+	input := `\d{3}\d{2,5}\d{12}\d{1,23}\d+\d*Hogee*\d\d\w\s\n\t\\.\D\W\S`
 
 	tests := []struct {
 		expectedType    token.TokenType
@@ -63,8 +63,8 @@ func TestNextToken(t *testing.T) {
 		{token.DOT, "."},
 
 		{token.NOTDIGIT, "D"},
-
 		{token.NOTWORD, "W"},
+		{token.NOTSPACE, "S"},
 
 		{token.EOF, ""},
 	}

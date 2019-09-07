@@ -18,7 +18,7 @@ const (
 	WORD     = "w"
 	NOTWORD  = "W"
 	SPACE    = "s"
-	// TODO: 実装する NOTSPACE = "S"
+	NOTSPACE = "S"
 	NEWLINE   = "n"
 	TAB       = "t"
 	BACKSLASH = "\\"

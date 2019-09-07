@@ -245,6 +245,35 @@ func (se *SpaceExpression) String() string {
 }
 func (se *SpaceExpression) expressionNode() {}
 
+type NotSpaceExpression struct {
+	Token token.Token
+	Range
+}
+
+func (nse *NotSpaceExpression) TokenLiteral() string { return nse.Token.Literal }
+func (nse *NotSpaceExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("\\S")
+	switch nse.Range.Max {
+	case INFINITE:
+		if nse.Range.Min == 0 {
+			out.WriteString("*")
+		} else {
+			out.WriteString("+")
+		}
+	default:
+		out.WriteString("{")
+		out.WriteString(strconv.Itoa(nse.Range.Min))
+		out.WriteString(",")
+		out.WriteString(strconv.Itoa(nse.Range.Max))
+		out.WriteString("}")
+	}
+
+	return out.String()
+}
+func (nse *NotSpaceExpression) expressionNode() {}
+
 type NewlineExpression struct {
 	Token token.Token
 	Range

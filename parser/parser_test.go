@@ -244,6 +244,45 @@ func TestSpaceExpression(t *testing.T) {
 	}
 }
 
+func TestNotSpaceExpression(t *testing.T) {
+	tests := []struct {
+		input       string
+		expectedMin int
+		expectedMax int
+	}{
+		{`\S{3}`, 3, 3},
+		{`\S{2,5}`, 2, 5},
+		{`\S{12}`, 12, 12},
+		{`\S{1,23}`, 1, 23},
+		{`\S+`, 1, ast.INFINITE},
+		{`\S*`, 0, ast.INFINITE},
+		{`\S`, 1, 1},
+	}
+
+	for i, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.Parse()
+
+		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("test[%d - program.Statement[0] is not ast.ExpressionStatement. got=%T]",
+				i, program.Statements[0])
+		}
+
+		notSpaceExpression, ok := stmt.Expression.(*ast.NotSpaceExpression)
+		if !ok {
+			t.Fatalf("test[%d - exp not *ast.NotSpaceExpression. got=%T]", i, stmt.Expression)
+		}
+		if notSpaceExpression.Range.Min != tt.expectedMin {
+			t.Fatalf("test[%d - wrong Range(min). got=%v, want=%v]", i, notSpaceExpression.Range.Min, tt.expectedMin)
+		}
+		if notSpaceExpression.Range.Max != tt.expectedMax {
+			t.Fatalf("test[%d - wrong Range(max). got=%v, want=%v]", i, notSpaceExpression.Range.Max, tt.expectedMax)
+		}
+	}
+}
+
 func TestNewlineExpression(t *testing.T) {
 	tests := []struct {
 		input       string
