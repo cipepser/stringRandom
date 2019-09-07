@@ -54,11 +54,11 @@ func TestNextToken(t *testing.T) {
 
 		{token.SPACE, "s"},
 
-		{token.NEWLINE, "NEWLINE"},
+		{token.NEWLINE, "n"},
 
-		{token.TAB, "TAB"},
+		{token.TAB, "t"},
 
-		{token.BACKSLASH, "BACKSLASH"},
+		{token.BACKSLASH, "\\"},
 
 		{token.DOT, "."},
 

@@ -64,15 +64,15 @@ func (l *Lexer) NextToken() token.Token {
 			tok.Type = token.SPACE
 		case 'n':
 			l.ReadChar()
-			tok.Literal = "NEWLINE"
+			tok.Literal = "n"
 			tok.Type = token.NEWLINE
 		case 't':
 			l.ReadChar()
-			tok.Literal = "TAB"
+			tok.Literal = "t"
 			tok.Type = token.TAB
 		case '\\':
 			l.ReadChar()
-			tok.Literal = "BACKSLASH"
+			tok.Literal = "\\"
 			tok.Type = token.BACKSLASH
 		default:
 			panic("undefined meta-character:" + string(l.ch))
