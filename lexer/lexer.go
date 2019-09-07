@@ -54,6 +54,10 @@ func (l *Lexer) NextToken() token.Token {
 			l.ReadChar()
 			tok.Literal = "s"
 			tok.Type = token.SPACE
+		case 'n':
+			l.ReadChar()
+			tok.Literal = "NEWLINE"
+			tok.Type = token.NEWLINE
 		default:
 			panic("undefined meta-character:" + string(l.ch))
 		}

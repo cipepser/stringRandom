@@ -42,6 +42,8 @@ func Generate(node ast.Node) {
 		generateWordExpression(node)
 	case *ast.SpaceExpression:
 		generateSpaceExpression(node)
+	case *ast.NewlineExpression:
+		generateNewlineExpression(node)
 	default:
 		panic("unknown node" + node.String())
 	}
@@ -140,4 +142,20 @@ func generateRandomSpace() string {
 	r := rand.Intn(len(SPACES))
 
 	return SPACES[r]
+}
+
+func generateNewlineExpression(node *ast.NewlineExpression) {
+	var out bytes.Buffer
+	rand.Seed(time.Now().UnixNano())
+
+	max := node.Range.Max
+	if max == ast.INFINITE {
+		max = INFINITE
+	}
+
+	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
+	for i := 0; i < n; i++ {
+		out.WriteString("\n")
+	}
+	fmt.Print(out.String())
 }

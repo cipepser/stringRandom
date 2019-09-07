@@ -19,7 +19,7 @@ const (
 	// TODO: 実装する NOTWORD  = "W"
 	SPACE    = "SPACE"
 	// TODO: 実装する NOTSPACE = "NOTSPACE"
-	// TODO: 実装する NEWLINE = "NEWLINE"
+	NEWLINE = "NEWLINE"
 	// TODO: 実装する TAB = "TAB"
 	// TODO: 実装する SLASH = "SLASH"
 
