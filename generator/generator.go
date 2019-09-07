@@ -58,6 +58,8 @@ func Generate(node ast.Node) {
 		generateProgram(node)
 	case *ast.ExpressionStatement:
 		generateExpressionStatement(node)
+	case *ast.NumberExpression:
+		generateNumberExpression(node)
 	case *ast.DigitExpression:
 		generateDigitExpression(node)
 	case *ast.NotDigitExpression:
@@ -93,6 +95,22 @@ func generateProgram(program *ast.Program) {
 
 func generateExpressionStatement(node *ast.ExpressionStatement) {
 	Generate(node.Expression)
+}
+
+func generateNumberExpression(node *ast.NumberExpression) {
+	var out bytes.Buffer
+	rand.Seed(time.Now().UnixNano())
+
+	max := node.Range.Max
+	if max == ast.INFINITE {
+		max = INFINITE
+	}
+
+	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
+	for i := 0; i < n; i++ {
+		out.WriteString(node.TokenLiteral())
+	}
+	fmt.Print(out.String())
 }
 
 func generateDigitExpression(node *ast.DigitExpression) {

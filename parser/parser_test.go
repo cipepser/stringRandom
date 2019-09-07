@@ -8,6 +8,46 @@ import (
 
 // TODO: 複数にまたがった正規表現のテストを書く
 
+func TestNumberExpression(t *testing.T) {
+	tests := []struct {
+		input           string
+		expectedLiteral string
+		expectedMin     int
+		expectedMax     int
+	}{
+		{`123`, "123", 1, 1},
+		{`123*`, "12", 1, 1},
+		{`1+`, "1", 1, ast.INFINITE},
+		{`2*`, "2", 0, ast.INFINITE},
+	}
+
+	for i, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.Parse()
+
+		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("test[%d - program.Statement[0] is not ast.ExpressionStatement. got=%T]",
+				i, program.Statements[0])
+		}
+
+		numberExpression, ok := stmt.Expression.(*ast.NumberExpression)
+		if !ok {
+			t.Fatalf("test[%d - exp not *ast.NumberExpression. got=%T]", i, stmt.Expression)
+		}
+		if numberExpression.TokenLiteral() != tt.expectedLiteral {
+			t.Fatalf("test[%d - wrong token literal. got=%s, want=%s]", i, numberExpression.TokenLiteral(), tt.expectedLiteral)
+		}
+		if numberExpression.Range.Min != tt.expectedMin {
+			t.Fatalf("test[%d - wrong Range(min). got=%v, want=%v]", i, numberExpression.Range.Min, tt.expectedMin)
+		}
+		if numberExpression.Range.Max != tt.expectedMax {
+			t.Fatalf("test[%d - wrong Range(max). got=%v, want=%v]", i, numberExpression.Range.Max, tt.expectedMax)
+		}
+	}
+}
+
 func TestDigitExpression(t *testing.T) {
 	tests := []struct {
 		input       string

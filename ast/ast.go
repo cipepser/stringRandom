@@ -67,6 +67,39 @@ func (es *ExpressionStatement) String() string {
 	return ""
 }
 
+type NumberExpression struct {
+	Token token.Token
+	Range
+}
+
+func (ne *NumberExpression) TokenLiteral() string { return ne.Token.Literal }
+func (ne *NumberExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ne.Token.Literal)
+	if ne.Range.Min == 0 && ne.Range.Max == 0 {
+		return out.String()
+	}
+
+	switch ne.Range.Max {
+	case INFINITE:
+		if ne.Range.Min == 0 {
+			out.WriteString("*")
+		} else {
+			out.WriteString("+")
+		}
+	default:
+		out.WriteString("{")
+		out.WriteString(strconv.Itoa(ne.Range.Min))
+		out.WriteString(",")
+		out.WriteString(strconv.Itoa(ne.Range.Max))
+		out.WriteString("}")
+	}
+
+	return out.String()
+}
+func (ne *NumberExpression) expressionNode() {}
+
 type DigitExpression struct {
 	Token token.Token
 	Range
