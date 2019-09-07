@@ -273,3 +273,32 @@ func (be *BackslashExpression) String() string {
 	return out.String()
 }
 func (be *BackslashExpression) expressionNode() {}
+
+type DotExpression struct {
+	Token token.Token
+	Range
+}
+
+func (de *DotExpression) TokenLiteral() string { return de.Token.Literal }
+func (de *DotExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(".")
+	switch de.Range.Max {
+	case INFINITE:
+		if de.Range.Min == 0 {
+			out.WriteString("*")
+		} else {
+			out.WriteString("+")
+		}
+	default:
+		out.WriteString("{")
+		out.WriteString(strconv.Itoa(de.Range.Min))
+		out.WriteString(",")
+		out.WriteString(strconv.Itoa(de.Range.Max))
+		out.WriteString("}")
+	}
+
+	return out.String()
+}
+func (de *DotExpression) expressionNode() {}

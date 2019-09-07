@@ -17,8 +17,9 @@ var (
 	LOWERS = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
 	DIGITS = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
 	SPACES = []string{" ", "\n", "\t"}
-	//OETHERS =[]string{"!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "\\", "]", "^", "`", "{", "|", "}", "~"}
-	WORD []string
+	OTHERS = []string{"!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "\\", "]", "^", "`", "{", "|", "}", "~"}
+	WORD   []string
+	ANY    []string
 )
 
 func init() {
@@ -26,6 +27,12 @@ func init() {
 	WORD = append(WORD, LOWERS...)
 	WORD = append(WORD, DIGITS...)
 	WORD = append(WORD, "_")
+
+	ANY = append(ANY, UPPERS...)
+	ANY = append(ANY, LOWERS...)
+	ANY = append(ANY, DIGITS...)
+	ANY = append(ANY, OTHERS...)
+	ANY = append(ANY, "_")
 }
 
 func Generate(node ast.Node) {
@@ -48,6 +55,8 @@ func Generate(node ast.Node) {
 		generateTabExpression(node)
 	case *ast.BackslashExpression:
 		generateBackslashExpression(node)
+	case *ast.DotExpression:
+		generateDotExpression(node)
 	default:
 		panic("unknown node" + node.String())
 	}
@@ -194,4 +203,27 @@ func generateBackslashExpression(node *ast.BackslashExpression) {
 		out.WriteString("\\")
 	}
 	fmt.Print(out.String())
+}
+
+func generateDotExpression(node *ast.DotExpression) {
+	var out bytes.Buffer
+	rand.Seed(time.Now().UnixNano())
+
+	max := node.Range.Max
+	if max == ast.INFINITE {
+		max = INFINITE
+	}
+
+	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
+	for i := 0; i < n; i++ {
+		out.WriteString(generateRandomAny())
+	}
+	fmt.Print(out.String())
+}
+
+func generateRandomAny() string {
+	rand.Seed(time.Now().UnixNano())
+	r := rand.Intn(len(ANY))
+
+	return ANY[r]
 }

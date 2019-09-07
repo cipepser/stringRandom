@@ -23,7 +23,7 @@ const (
 	TAB = "TAB"
 	BACKSLASH = "BACKSLASH"
 
-	// TODO: 実装する DOT = "."
+	DOT = "."
 	PLUS     = "+"
 	ASTERISK = "*"
 	// TODO: 実装する QUESTION = "?"
@@ -37,7 +37,7 @@ const (
 	// TODO: 実装する VERTICAL = "|"
 	COMMA  = ","
 
-	// TODO: 実装する HEAD = "^"
+	// TODO: 実装する HEAD = "^" // []で使われると否定子になる
 	// TODO: 実装する TAIL = "$"
 	// TODO: 実装する？
 	//   WORDHEAD = "<"
