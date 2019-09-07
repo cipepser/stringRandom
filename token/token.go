@@ -22,6 +22,7 @@ const (
 	NEWLINE   = "n"
 	TAB       = "t"
 	BACKSLASH = "\\"
+	// TODO: メタ文字のエスケープ処理
 
 	DOT      = "."
 	PLUS     = "+"
@@ -36,11 +37,10 @@ const (
 	// TODO: 実装する RBRACKET = "]"
 	// TODO: 実装する VERTICAL = "|"
 	COMMA = ","
-	// TODO: メタ文字のエスケープ処理
 
 	// TODO: 実装する HEAD = "^" // []で使われると否定子になる
 	// TODO: 実装する TAIL = "$"
-	// TODO: 実装する？
+	// TODO: 以下は実装する？
 	//   WORDHEAD = "<"
 	//   WORDTAIL = ">"
 	//   WORDHEADORTAIL = "b"
