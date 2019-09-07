@@ -244,3 +244,32 @@ func (te *TabExpression) String() string {
 	return out.String()
 }
 func (te *TabExpression) expressionNode() {}
+
+type BackslashExpression struct {
+	Token token.Token
+	Range
+}
+
+func (be *BackslashExpression) TokenLiteral() string { return be.Token.Literal }
+func (be *BackslashExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("\\\\")
+	switch be.Range.Max {
+	case INFINITE:
+		if be.Range.Min == 0 {
+			out.WriteString("*")
+		} else {
+			out.WriteString("+")
+		}
+	default:
+		out.WriteString("{")
+		out.WriteString(strconv.Itoa(be.Range.Min))
+		out.WriteString(",")
+		out.WriteString(strconv.Itoa(be.Range.Max))
+		out.WriteString("}")
+	}
+
+	return out.String()
+}
+func (be *BackslashExpression) expressionNode() {}

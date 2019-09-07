@@ -62,6 +62,10 @@ func (l *Lexer) NextToken() token.Token {
 			l.ReadChar()
 			tok.Literal = "TAB"
 			tok.Type = token.TAB
+		case '\\':
+			l.ReadChar()
+			tok.Literal = "BACKSLASH"
+			tok.Type = token.BACKSLASH
 		default:
 			panic("undefined meta-character:" + string(l.ch))
 		}

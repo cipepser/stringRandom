@@ -243,3 +243,42 @@ func TestTabExpression(t *testing.T) {
 		}
 	}
 }
+
+func TestBackslashExpression(t *testing.T) {
+	tests := []struct {
+		input       string
+		expectedMin int
+		expectedMax int
+	}{
+		{`\\{3}`, 3, 3},
+		{`\\{2,5}`, 2, 5},
+		{`\\{12}`, 12, 12},
+		{`\\{1,23}`, 1, 23},
+		{`\\+`, 1, ast.INFINITE},
+		{`\\*`, 0, ast.INFINITE},
+		{`\\`, 1, 1},
+	}
+
+	for i, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.Parse()
+
+		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("test[%d - program.Statement[0] is not ast.ExpressionStatement. got=%T]",
+				i, program.Statements[0])
+		}
+
+		backslashExpression, ok := stmt.Expression.(*ast.BackslashExpression)
+		if !ok {
+			t.Fatalf("test[%d - exp not *ast.BackslashExpression. got=%T]", i, stmt.Expression)
+		}
+		if backslashExpression.Range.Min != tt.expectedMin {
+			t.Fatalf("test[%d - wrong Range(min). got=%v, want=%v]", i, backslashExpression.Range.Min, tt.expectedMin)
+		}
+		if backslashExpression.Range.Max != tt.expectedMax {
+			t.Fatalf("test[%d - wrong Range(max). got=%v, want=%v]", i, backslashExpression.Range.Max, tt.expectedMax)
+		}
+	}
+}

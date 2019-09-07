@@ -46,6 +46,8 @@ func Generate(node ast.Node) {
 		generateNewlineExpression(node)
 	case *ast.TabExpression:
 		generateTabExpression(node)
+	case *ast.BackslashExpression:
+		generateBackslashExpression(node)
 	default:
 		panic("unknown node" + node.String())
 	}
@@ -174,6 +176,22 @@ func generateTabExpression(node *ast.TabExpression) {
 	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
 	for i := 0; i < n; i++ {
 		out.WriteString("\t")
+	}
+	fmt.Print(out.String())
+}
+
+func generateBackslashExpression(node *ast.BackslashExpression) {
+	var out bytes.Buffer
+	rand.Seed(time.Now().UnixNano())
+
+	max := node.Range.Max
+	if max == ast.INFINITE {
+		max = INFINITE
+	}
+
+	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
+	for i := 0; i < n; i++ {
+		out.WriteString("\\")
 	}
 	fmt.Print(out.String())
 }

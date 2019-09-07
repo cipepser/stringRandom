@@ -21,7 +21,7 @@ const (
 	// TODO: 実装する NOTSPACE = "NOTSPACE"
 	NEWLINE = "NEWLINE"
 	TAB = "TAB"
-	// TODO: 実装する SLASH = "SLASH"
+	BACKSLASH = "BACKSLASH"
 
 	// TODO: 実装する DOT = "."
 	PLUS     = "+"
