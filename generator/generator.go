@@ -18,8 +18,10 @@ var (
 	DIGITS = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
 	SPACES = []string{" ", "\n", "\t"}
 	OTHERS = []string{"!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "\\", "]", "^", "`", "{", "|", "}", "~"}
-	WORD   []string
-	ANY    []string
+
+	WORD      []string
+	ANY       []string
+	NOTDIGITS []string
 )
 
 func init() {
@@ -33,6 +35,11 @@ func init() {
 	ANY = append(ANY, DIGITS...)
 	ANY = append(ANY, OTHERS...)
 	ANY = append(ANY, "_")
+
+	NOTDIGITS = append(NOTDIGITS, UPPERS...)
+	NOTDIGITS = append(NOTDIGITS, LOWERS...)
+	NOTDIGITS = append(NOTDIGITS, OTHERS...)
+	NOTDIGITS = append(NOTDIGITS, "_")
 }
 
 func Generate(node ast.Node) {
@@ -43,6 +50,8 @@ func Generate(node ast.Node) {
 		generateExpressionStatement(node)
 	case *ast.DigitExpression:
 		generateDigitExpression(node)
+	case *ast.NotDigitExpression:
+		generateNotDigitExpression(node)
 	case *ast.StringExpression:
 		generateStringExpression(node)
 	case *ast.WordExpression:
@@ -93,6 +102,29 @@ func generateRandomDigit() string {
 	r := rand.Intn(len(DIGITS))
 
 	return DIGITS[r]
+}
+
+func generateNotDigitExpression(node *ast.NotDigitExpression) {
+	var out bytes.Buffer
+	rand.Seed(time.Now().UnixNano())
+
+	max := node.Range.Max
+	if max == ast.INFINITE {
+		max = INFINITE
+	}
+
+	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
+	for i := 0; i < n; i++ {
+		out.WriteString(generateRandomNotDigit())
+	}
+	fmt.Print(out.String())
+}
+
+func generateRandomNotDigit() string {
+	rand.Seed(time.Now().UnixNano())
+	r := rand.Intn(len(NOTDIGITS))
+
+	return NOTDIGITS[r]
 }
 
 func generateStringExpression(node *ast.StringExpression) {

@@ -14,7 +14,7 @@ const (
 	INT    = "INT"
 	STRING = "STRING"
 	DIGIT  = "d"
-	// TODO: 実装する NOTDIGIT = "D"
+	NOTDIGIT = "D"
 	WORD = "w"
 	// TODO: 実装する NOTWORD  = "W"
 	SPACE = "SPACE"

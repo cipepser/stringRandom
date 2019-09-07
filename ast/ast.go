@@ -22,6 +22,14 @@ type Expression interface {
 	expressionNode()
 }
 
+type Range struct {
+	Min, Max int
+}
+
+const (
+	INFINITE = math.MaxInt64 // 便宜上MaxInt64を使う
+)
+
 type Program struct {
 	Statements []Statement
 }
@@ -88,13 +96,34 @@ func (de *DigitExpression) String() string {
 }
 func (de *DigitExpression) expressionNode() {}
 
-type Range struct {
-	Min, Max int
+type NotDigitExpression struct {
+	Token token.Token
+	Range
 }
 
-const (
-	INFINITE = math.MaxInt64 // 便宜上MaxInt64を使う
-)
+func (nde *NotDigitExpression) TokenLiteral() string { return nde.Token.Literal }
+func (nde *NotDigitExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("\\D")
+	switch nde.Range.Max {
+	case INFINITE:
+		if nde.Range.Min == 0 {
+			out.WriteString("*")
+		} else {
+			out.WriteString("+")
+		}
+	default:
+		out.WriteString("{")
+		out.WriteString(strconv.Itoa(nde.Range.Min))
+		out.WriteString(",")
+		out.WriteString(strconv.Itoa(nde.Range.Max))
+		out.WriteString("}")
+	}
+
+	return out.String()
+}
+func (nde *NotDigitExpression) expressionNode() {}
 
 type StringExpression struct {
 	Token token.Token
