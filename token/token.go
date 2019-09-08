@@ -29,12 +29,13 @@ const (
 	ASTERISK = "*"
 	// TODO: 実装する QUESTION = "?"
 
-	LBRACE = "{"
-	RBRACE = "}"
-	LPAREN = "("
-	RPAREN = ")"
-	// TODO: 実装する LBRACKET = "["
-	// TODO: 実装する RBRACKET = "]"
+	LBRACE   = "{"
+	RBRACE   = "}"
+	LPAREN   = "("
+	RPAREN   = ")"
+	LBRACKET = "["
+	RBRACKET = "]"
+	// TODO: 実装する BAR = "-" // []で使われると範囲指定子になる
 	// TODO: 実装する VERTICAL = "|"
 	COMMA = ","
 
