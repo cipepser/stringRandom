@@ -26,6 +26,8 @@ type Range struct {
 	Min, Max int
 }
 
+// TODO: Range.String()を実装してリファクタリング
+
 const (
 	INFINITE = math.MaxInt64 // 便宜上MaxInt64を使う
 )
@@ -454,3 +456,35 @@ func (be *BlockExpression) String() string {
 	return out.String()
 }
 func (be *BlockExpression) expressionNode() {}
+
+type BracketExpression struct {
+	Token token.Token
+	Block Program
+	Range
+}
+
+func (be *BracketExpression) TokenLiteral() string { return be.Token.Literal }
+func (be *BracketExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("[")
+	out.WriteString(be.Block.String())
+	out.WriteString("]")
+	switch be.Range.Max {
+	case INFINITE:
+		if be.Range.Min == 0 {
+			out.WriteString("*")
+		} else {
+			out.WriteString("+")
+		}
+	default:
+		out.WriteString("{")
+		out.WriteString(strconv.Itoa(be.Range.Min))
+		out.WriteString(",")
+		out.WriteString(strconv.Itoa(be.Range.Max))
+		out.WriteString("}")
+	}
+
+	return out.String()
+}
+func (be *BracketExpression) expressionNode() {}

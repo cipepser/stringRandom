@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"github.com/cipepser/stringRandom/ast"
 	"github.com/cipepser/stringRandom/lexer"
 	"github.com/cipepser/stringRandom/token"
@@ -536,7 +537,7 @@ func TestBlockExpression(t *testing.T) {
 					},
 				},
 				&ast.ExpressionStatement{
-					Expression: &ast.NumberExpression{
+					Expression: &ast.DigitExpression{
 						Token: token.Token{
 							Type:    token.DIGIT,
 							Literal: "\\d",
@@ -581,14 +582,176 @@ func TestBlockExpression(t *testing.T) {
 		if !ok {
 			t.Fatalf("test[%d - exp not *ast.BlockExpression. got=%T]", i, stmt.Expression)
 		}
-		if len(dotExpression.Block.Statements) != len(tt.expectedBlock.Statements) {
-			t.Fatalf("test[%d - length mismatch with *ast.BlockExpression and expected.\ngot=%d\nwant=%d\n]",
+
+		if dotExpression.Range.Min != tt.expectedMin {
+			t.Fatalf("test[%d - wrong Range(min). got=%v, want=%v]", i, dotExpression.Range.Min, tt.expectedMin)
+		}
+		if dotExpression.Range.Max != tt.expectedMax {
+			t.Fatalf("test[%d - wrong Range(max). got=%v, want=%v]", i, dotExpression.Range.Max, tt.expectedMax)
+		}
+	}
+}
+
+func TestBracketExpression(t *testing.T) {
+	tests := []struct {
+		input         string
+		expectedBlock ast.Program
+		expectedMin   int
+		expectedMax   int
+	}{
+		{`[abc]`, ast.Program{
+			Statements: []ast.Statement{
+				&ast.ExpressionStatement{
+					Expression: &ast.StringExpression{
+						Token: token.Token{Type: token.STRING, Literal: "a"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.StringExpression{
+						Token: token.Token{Type: token.STRING, Literal: "b"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.StringExpression{
+						Token: token.Token{Type: token.STRING, Literal: "c"},
+						Range: ast.Range{1, 1},
+					},
+				},
+			},
+		}, 1, 1},
+		{`[abc]{2,3}`, ast.Program{
+			Statements: []ast.Statement{
+				&ast.ExpressionStatement{
+					Expression: &ast.StringExpression{
+						Token: token.Token{Type: token.STRING, Literal: "a"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.StringExpression{
+						Token: token.Token{Type: token.STRING, Literal: "b"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.StringExpression{
+						Token: token.Token{Type: token.STRING, Literal: "c"},
+						Range: ast.Range{1, 1},
+					},
+				},
+			},
+		}, 2, 3},
+		{`[abc]+`, ast.Program{
+			Statements: []ast.Statement{
+				&ast.ExpressionStatement{
+					Expression: &ast.StringExpression{
+						Token: token.Token{Type: token.STRING, Literal: "a"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.StringExpression{
+						Token: token.Token{Type: token.STRING, Literal: "b"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.StringExpression{
+						Token: token.Token{Type: token.STRING, Literal: "c"},
+						Range: ast.Range{1, 1},
+					},
+				},
+			},
+		}, 1, ast.INFINITE},
+		{`[123\d(a{3})b]`, ast.Program{
+			Statements: []ast.Statement{
+				&ast.ExpressionStatement{
+					Expression: &ast.NumberExpression{
+						Token: token.Token{Type: token.INT, Literal: "1"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.NumberExpression{
+						Token: token.Token{Type: token.INT, Literal: "2"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.NumberExpression{
+						Token: token.Token{Type: token.INT, Literal: "3"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.DigitExpression{
+						Token: token.Token{Type: token.DIGIT, Literal: "d"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.StringExpression{
+						Token: token.Token{Type: token.STRING, Literal: "a"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.StringExpression{
+						Token: token.Token{Type: token.STRING, Literal: "{"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.NumberExpression{
+						Token: token.Token{Type: token.INT, Literal: "3"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.StringExpression{
+						Token: token.Token{Type: token.STRING, Literal: "}"},
+						Range: ast.Range{1, 1},
+					},
+				},
+				&ast.ExpressionStatement{
+					Expression: &ast.StringExpression{
+						Token: token.Token{Type: token.STRING, Literal: "b"},
+						Range: ast.Range{1, 1},
+					},
+				},
+			},
+		}, 1, 1},
+	}
+
+	for i, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.Parse()
+
+		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("test[%d - program.Statement[0] is not ast.ExpressionStatement. got=%T]",
+				i, program.Statements[0])
+		}
+
+		anyBlockExpression, ok := stmt.Expression.(*ast.BracketExpression)
+		if !ok {
+			t.Fatalf("test[%d - exp not *ast.BracketExpression. got=%T]", i, stmt.Expression)
+		}
+
+		if len(anyBlockExpression.Block.Statements) != len(tt.expectedBlock.Statements) {
+			fmt.Println(anyBlockExpression.Block)
+			t.Fatalf("test[%d - length mismatch with *ast.BracketExpression and expected.\ngot=%d\nwant=%d\n]",
 				i,
-				len(dotExpression.Block.Statements),
+				len(anyBlockExpression.Block.Statements),
 				len(tt.expectedBlock.Statements))
 		}
-		for j, stmt := range dotExpression.Block.Statements {
+
+		for j, stmt := range anyBlockExpression.Block.Statements {
 			if stmt.String() != tt.expectedBlock.Statements[j].String() {
+				fmt.Printf("type: %T\n", stmt.(*ast.ExpressionStatement).Expression)
 				t.Fatalf("test[%d(%d) - block not expected.\ngot=%s\nwant=%s\n]",
 					i,
 					j,
@@ -597,11 +760,11 @@ func TestBlockExpression(t *testing.T) {
 			}
 		}
 
-		if dotExpression.Range.Min != tt.expectedMin {
-			t.Fatalf("test[%d - wrong Range(min). got=%v, want=%v]", i, dotExpression.Range.Min, tt.expectedMin)
+		if anyBlockExpression.Range.Min != tt.expectedMin {
+			t.Fatalf("test[%d - wrong Range(min). got=%v, want=%v]", i, anyBlockExpression.Range.Min, tt.expectedMin)
 		}
-		if dotExpression.Range.Max != tt.expectedMax {
-			t.Fatalf("test[%d - wrong Range(max). got=%v, want=%v]", i, dotExpression.Range.Max, tt.expectedMax)
+		if anyBlockExpression.Range.Max != tt.expectedMax {
+			t.Fatalf("test[%d - wrong Range(max). got=%v, want=%v]", i, anyBlockExpression.Range.Max, tt.expectedMax)
 		}
 	}
 }

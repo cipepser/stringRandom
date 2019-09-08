@@ -84,6 +84,8 @@ func Generate(node ast.Node) {
 		generateDotExpression(node)
 	case *ast.BlockExpression:
 		generateBlockExpression(node)
+	case *ast.BracketExpression:
+		generateBracketExpression(node)
 	default:
 		panic("unknown node" + node.String())
 	}
@@ -351,5 +353,20 @@ func generateBlockExpression(node *ast.BlockExpression) {
 	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
 	for i := 0; i < n; i++ {
 		Generate(&node.Block)
+	}
+}
+
+func generateBracketExpression(node *ast.BracketExpression) {
+	rand.Seed(time.Now().UnixNano())
+
+	max := node.Range.Max
+	if max == ast.INFINITE {
+		max = INFINITE
+	}
+
+	n := rand.Intn(max-node.Range.Min+1) + node.Range.Min
+	for i := 0; i < n; i++ {
+		r := rand.Intn(len(node.Block.Statements))
+		Generate(node.Block.Statements[r])
 	}
 }

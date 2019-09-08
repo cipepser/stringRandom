@@ -41,6 +41,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.BACKSLASH, p.parseBackslash)
 	p.registerPrefix(token.DOT, p.parseDot)
 	p.registerPrefix(token.LPAREN, p.parseBlock)
+	p.registerPrefix(token.LBRACKET, p.parseBracket)
 
 	p.nextToken()
 	p.nextToken()
@@ -350,4 +351,98 @@ func (p *Parser) parseBlock() ast.Expression {
 	expression.Range = r
 
 	return expression
+}
+
+func (p *Parser) parseBracket() ast.Expression {
+	expression := &ast.BracketExpression{
+		Token: p.curToken,
+	}
+	p.nextToken()
+
+	program := &ast.Program{}
+	program.Statements = []ast.Statement{}
+
+LoopToken:
+	for !p.curTokenIs(token.RBRACKET) {
+		switch p.curToken.Type {
+		case token.INT, token.STRING:
+			var stmt ast.Statement
+			for _, stmt := range p.divideToChars(p.curToken) {
+				program.Statements = append(program.Statements, stmt)
+			}
+			if stmt != nil {
+				program.Statements = append(program.Statements, stmt)
+			}
+			p.nextToken()
+
+		case token.LPAREN, token.RPAREN: // do nothing
+			p.nextToken()
+			continue LoopToken
+
+		case token.LBRACE, token.RBRACE, token.DOT, token.PLUS, token.ASTERISK, token.COMMA:
+			stmt := &ast.ExpressionStatement{Token: p.curToken}
+			stmt.Expression = &ast.StringExpression{
+				Token: p.curToken,
+				Range: ast.Range{Min: 1, Max: 1},
+			}
+			if stmt != nil {
+				program.Statements = append(program.Statements, stmt)
+			}
+			p.nextToken()
+
+		default:
+			stmt := p.parseStatement()
+			if stmt != nil {
+				program.Statements = append(program.Statements, stmt)
+			}
+			p.nextToken()
+		}
+	}
+
+	expression.Block = *program
+
+	r, err := p.parseRange()
+	if err != nil {
+		return nil
+	}
+	expression.Range = r
+
+	return expression
+}
+
+func (p *Parser) divideToChars(t token.Token) []ast.Statement {
+	if len(t.Literal) == 0 {
+		return nil
+	}
+
+	stmts := []ast.Statement{}
+
+	for i := 0; i < len(t.Literal); i++ {
+		stmt := &ast.ExpressionStatement{Token: t}
+
+		switch t.Type {
+		case token.INT:
+			stmt.Expression = &ast.NumberExpression{
+				Token: token.Token{
+					Type:    token.INT,
+					Literal: string(t.Literal[i]),
+				},
+				Range: ast.Range{Min: 1, Max: 1},
+			}
+		case token.STRING:
+			stmt.Expression = &ast.StringExpression{
+				Token: token.Token{
+					Type:    token.STRING,
+					Literal: string(t.Literal[i]),
+				},
+				Range: ast.Range{Min: 1, Max: 1},
+			}
+		default:
+			panic("unreachable")
+		}
+
+		stmts = append(stmts, stmt)
+	}
+
+	return stmts
 }
