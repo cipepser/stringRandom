@@ -35,16 +35,8 @@ const (
 	RPAREN   = ")"
 	LBRACKET = "["
 	RBRACKET = "]"
-	// TODO: 実装する BAR = "-" // []で使われると範囲指定子になる
+	BAR      = "-" // []で使われると範囲指定子になる
 	// TODO: 実装する VERTICAL = "|"
 	COMMA = ","
-
-	// TODO: 実装する HEAD = "^" // []で使われると否定子になる
-	// TODO: 実装する TAIL = "$"
-	// TODO: 以下は実装する？
-	//   WORDHEAD = "<"
-	//   WORDTAIL = ">"
-	//   WORDHEADORTAIL = "b"
-	//   NOTWORDHEADORTAIL = "B"
-	//   \A, \z、\G
+	// TODO: 実装する NOT = "^" // []で使われると否定子になる
 )

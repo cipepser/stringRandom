@@ -105,6 +105,9 @@ func (l *Lexer) NextToken() token.Token {
 	case ']':
 		tok.Literal = "]"
 		tok.Type = token.RBRACKET
+	case '-':
+		tok.Literal = "-"
+		tok.Type = token.BAR
 	case ',':
 		tok.Literal = ","
 		tok.Type = token.COMMA
@@ -134,7 +137,6 @@ func (l *Lexer) NextToken() token.Token {
 
 func isLetter(ch byte) bool {
 	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
-	// TODO: これ以外の文字も追加する？
 }
 
 func (l *Lexer) readString() string {
